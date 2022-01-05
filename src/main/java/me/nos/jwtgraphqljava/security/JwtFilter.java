@@ -1,11 +1,6 @@
 package me.nos.jwtgraphqljava.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.GraphQLError;
-import graphql.GraphqlErrorBuilder;
 import lombok.extern.log4j.Log4j2;
-import me.nos.jwtgraphqljava.errors.ErrorResponse;
 import me.nos.jwtgraphqljava.utils.JwtUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,21 +54,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-            //filterChain.doFilter(request, response);
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            //GraphQLError error = GraphqlErrorBuilder.newError().message(ex.getMessage()).build();
-            //response.getWriter().write(convertObjectToJson(error));
-            //throw new ErrorResponse(ex.getMessage());
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String convertObjectToJson(Object object) throws JsonProcessingException {
-        if (object == null) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(object);
     }
 }

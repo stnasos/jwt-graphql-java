@@ -16,7 +16,7 @@ type LoginOutput {
 type AppUser {
     id: ID!
     username: String
-    password: String
+#    password: String
     enabled: Boolean
     roles: [AppRole]
 }

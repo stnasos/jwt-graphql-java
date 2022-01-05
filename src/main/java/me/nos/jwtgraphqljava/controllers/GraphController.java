@@ -8,7 +8,6 @@ import me.nos.jwtgraphqljava.services.IUserService;
 import me.nos.jwtgraphqljava.utils.JwtUtil;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,12 +34,13 @@ public class GraphController {
     }
 
     @QueryMapping
-    @PreAuthorize("hasAuthority('ADMIN')") //"hasRole('ROLE_ADMIN')"
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String greeting() {
         return "Hello You!!!";
     }
 
     @QueryMapping
+    @PreAuthorize("isAnonymous()")
     public LoginOutput login(@Argument("loginInput") LoginInput loginInput) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginInput.getUsername(), loginInput.getPassword())
@@ -58,11 +58,5 @@ public class GraphController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<AppUser> getAllUsers() {
         return userService.getAllUsers();
-    }
-
-    @SchemaMapping
-    @PreAuthorize("hasAuthority('TEST')")
-    public String password(AppUser appUser) {
-        return appUser.getPassword();
     }
 }
