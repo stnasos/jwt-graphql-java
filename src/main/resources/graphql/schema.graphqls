@@ -1,0 +1,28 @@
+type Query {
+    greeting: String
+    login(loginInput: LoginInput!): LoginOutput
+    getAllUsers: [AppUser]
+}
+
+input LoginInput {
+    username: String!
+    password: String!
+}
+
+type LoginOutput {
+    jwt: String
+}
+
+type AppUser {
+    id: ID!
+    username: String
+    password: String
+    enabled: Boolean
+    roles: [AppRole]
+}
+
+type AppRole {
+    id: ID!
+    name: String
+    users: [AppUser]
+}
