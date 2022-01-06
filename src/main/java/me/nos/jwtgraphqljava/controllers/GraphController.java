@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -41,7 +42,7 @@ public class GraphController {
 
     @QueryMapping
     @PreAuthorize("isAnonymous()")
-    public LoginOutput login(@Argument("loginInput") LoginInput loginInput) {
+    public LoginOutput login(@Argument("loginInput") @Valid LoginInput loginInput) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginInput.getUsername(), loginInput.getPassword())
         );
