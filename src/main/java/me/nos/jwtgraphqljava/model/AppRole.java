@@ -7,8 +7,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@Builder @ToString
-@Getter @Setter
+@Builder
+@ToString
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppRole {

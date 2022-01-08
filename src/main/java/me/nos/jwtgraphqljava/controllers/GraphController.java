@@ -2,11 +2,13 @@ package me.nos.jwtgraphqljava.controllers;
 
 import me.nos.jwtgraphqljava.dtos.LoginInput;
 import me.nos.jwtgraphqljava.dtos.LoginOutput;
+import me.nos.jwtgraphqljava.dtos.NewUserDto;
 import me.nos.jwtgraphqljava.model.AppUser;
 import me.nos.jwtgraphqljava.security.AppUserDetailsService;
 import me.nos.jwtgraphqljava.services.IUserService;
 import me.nos.jwtgraphqljava.utils.JwtUtil;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
+import javax.persistence.EntityExistsException;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -59,5 +62,12 @@ public class GraphController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<AppUser> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @MutationMapping
+    public AppUser addUser(@Argument @Valid NewUserDto user) {
+        if (userService.existsByUsername(user.getUsername()))
+            throw new EntityExistsException("Username " + user.getUsername() + " already exists!");
+        return userService.addNewUser(user);
     }
 }

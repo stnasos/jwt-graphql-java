@@ -22,8 +22,6 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<AppUser> user = userService.findByUsername(username);
 
-        user.orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
-
-        return user.map(AppUserDetails::new).get();
+        return user.orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
     }
 }
