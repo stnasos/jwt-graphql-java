@@ -1,0 +1,67 @@
+scalar BigInteger
+scalar Date
+
+extend type Query {
+    getAllUsers: [User]
+}
+
+extend type Mutation {
+    addUser(user: addUserDto!): User
+    changeUsername(data: changeUsernameDto!): Boolean
+    changePassword(data: changePasswordDto!): Boolean
+    setUserEnabled(username: String!, enabled: Boolean!): Boolean
+    addUserToRoles(userRoles: userRolesDto!): Boolean
+    removeUserFromRoles(userRoles: userRolesDto!): Boolean
+}
+
+input addUserDto {
+    username: String!
+    password: String!
+    confirmPassword: String!
+}
+
+input changeUsernameDto {
+    oldUsername: String!
+    newUsername: String!
+}
+
+input changePasswordDto {
+    username: String!
+    oldPassword: String
+    newPassword: String!
+    confirmPassword: String!
+}
+
+input userRolesDto {
+    username: String!
+    roles: [String!]!
+}
+
+type User {
+    id: ID!
+    username: String
+    enabled: Boolean
+    accountNonExpired: Boolean
+    accountNonLocked: Boolean
+    credentialsNonExpired: Boolean
+    roles: [Role]
+    employee: Employee
+}
+
+type Role {
+    id: ID!
+    name: String
+    users: [User]
+}
+
+type Employee {
+    id: ID
+    firstname: String
+    lastname: String
+    dateOfBirth: Date
+    address: String
+    email: String
+    mobile: String
+    hiredOn: Date
+    salary: BigInteger
+}

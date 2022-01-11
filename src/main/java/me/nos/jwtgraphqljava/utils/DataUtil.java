@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 @Component
@@ -37,25 +38,22 @@ public class DataUtil {
     @EventListener
     @Transactional
     public void appReady(ApplicationReadyEvent event) throws ParseException {
-        if (userRepo.findAll().size() == 0) {
+        if (userRepo.count() == 0) {
 
             AppRole adminRole = AppRole.builder().name("ADMIN").build();
             AppRole managerRole = AppRole.builder().name("MANAGER").build();
             AppRole userRole = AppRole.builder().name("USER").build();
-            roleRepo.save(adminRole);
-            roleRepo.save(managerRole);
-            roleRepo.save(userRole);
+            roleRepo.saveAll(Arrays.asList(
+                    adminRole, managerRole, userRole
+            ));
 
-            String pass = encoder.encode("admin");
             AppUser user = AppUser.builder()
-                    .username("admin").password(pass)
+                    .username("admin").password(encoder.encode("admin"))
                     .enabled(true).accountNonExpired(true)
                     .accountNonLocked(true).credentialsNonExpired(true)
-                    .roles(new LinkedHashSet<>()).build();
-
-            user.addRole(adminRole);
-            user.addRole(managerRole);
-            user.addRole(userRole);
+                    .roles(new LinkedHashSet<>(Arrays.asList(
+                            adminRole, managerRole, userRole
+                    ))).build();
             userRepo.save(user);
 
             Employee employee = Employee.builder()

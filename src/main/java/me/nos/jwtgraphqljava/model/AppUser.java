@@ -8,15 +8,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
 @Builder
-@ToString
 @Getter
 @Setter
 @NoArgsConstructor
@@ -49,7 +45,8 @@ public class AppUser implements UserDetails {
     private boolean credentialsNonExpired;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<AppRole> roles = new java.util.LinkedHashSet<>();
+    @ToString.Exclude
+    private Set<AppRole> roles = new LinkedHashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn

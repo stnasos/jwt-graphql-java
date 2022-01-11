@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolationException;
 
-@Component
+//@Component
 public class AppErrorResolver extends DataFetcherExceptionResolverAdapter {
 
     private final AuthenticationTrustResolver resolver = new AuthenticationTrustResolverImpl();
@@ -33,7 +33,8 @@ public class AppErrorResolver extends DataFetcherExceptionResolverAdapter {
         } else if (ex instanceof ConstraintViolationException) {
             return this.buildError(ex, env, ErrorType.BAD_REQUEST);
         } else {
-            return this.buildError(ex, env, ErrorType.INTERNAL_ERROR);
+            return null;
+//            return this.buildError(ex, env, ErrorType.INTERNAL_ERROR);
         }
     }
 

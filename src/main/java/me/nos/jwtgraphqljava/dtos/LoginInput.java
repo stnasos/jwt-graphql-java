@@ -8,10 +8,10 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginInput {
     @NotNull(message = "username cannot be null")
     @NotBlank(message = "username cannot be blank")

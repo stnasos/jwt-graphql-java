@@ -1,31 +1,9 @@
-scalar BigInteger
-scalar Date
-
 type Query {
-    greeting: String
-    login(loginInput: LoginInput!): LoginOutput
-    getAllUsers: [AppUser]
+    login(loginInput: LoginInput!): LoginOutput!
 }
 
 type Mutation {
-    addUser(user: newUserDto!): AppUser
-}
-
-input newUserDto {
-    username: String!
-    password: String!
-    enabled: Boolean
-    accountNonExpired: Boolean
-    accountNonLocked: Boolean
-    credentialsNonExpired: Boolean
-    firstname: String
-    lastname: String
-    dateOfBirth: Date
-    address: String
-    email: String
-    mobile: String
-    hiredOn: Date
-    salary: BigInteger
+    register(user: addUserDto!): User
 }
 
 input LoginInput {
@@ -35,33 +13,4 @@ input LoginInput {
 
 type LoginOutput {
     jwt: String
-}
-
-type AppUser {
-    id: ID!
-    username: String
-    enabled: Boolean
-    accountNonExpired: Boolean
-    accountNonLocked: Boolean
-    credentialsNonExpired: Boolean
-    roles: [AppRole]
-    employee: Employee
-}
-
-type AppRole {
-    id: ID!
-    name: String
-    users: [AppUser]
-}
-
-type Employee {
-    id: ID
-    firstname: String
-    lastname: String
-    dateOfBirth: String
-    address: String
-    email: String
-    mobile: String
-    hiredOn: String
-    salary: String
 }

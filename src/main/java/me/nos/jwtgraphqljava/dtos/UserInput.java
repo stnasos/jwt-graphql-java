@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class NewUserDto {
+public class UserInput {
     @NotNull
     @NotBlank
     private String username;
