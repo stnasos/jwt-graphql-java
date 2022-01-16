@@ -1,6 +1,7 @@
 package me.nos.jwtgraphqljava.model;
 
 import lombok.*;
+import me.nos.jwtgraphqljava.dtos.AppUserDetailsDto;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -9,15 +10,16 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
-@Builder
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
+public class AppUserDetails {
     @Id
-    @Column(name = "user_id")
     private UUID id;
 
     private String firstname;
@@ -29,17 +31,23 @@ public class Employee {
     private LocalDate hiredOn;
     private BigDecimal salary;
 
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     @MapsId
-    @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private AppUser user;
+
+    public AppUserDetailsDto mapToUserDetailsDto() {
+        return new AppUserDetailsDto(this.getId(), this.getFirstname(), this.getLastname(),
+                this.getDateOfBirth(), this.getAddress(), this.getEmail(), this.getMobile(),
+                this.getHiredOn(), this.getSalary());
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Employee employee = (Employee) o;
-        return id != null && Objects.equals(id, employee.id);
+        AppUserDetails appUserDetails = (AppUserDetails) o;
+        return id != null && Objects.equals(id, appUserDetails.id);
     }
 
     @Override

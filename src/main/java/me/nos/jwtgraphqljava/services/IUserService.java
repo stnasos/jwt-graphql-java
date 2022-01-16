@@ -1,38 +1,31 @@
 package me.nos.jwtgraphqljava.services;
 
-import me.nos.jwtgraphqljava.dtos.AddUserDto;
-import me.nos.jwtgraphqljava.dtos.UserInput;
+import me.nos.jwtgraphqljava.dtos.*;
 import me.nos.jwtgraphqljava.model.AppUser;
-import me.nos.jwtgraphqljava.model.Employee;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public interface IUserService {
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    Optional<AppUser> findByUsername(String username);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    AppUserDto findByUsername(String username);
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    List<AppUser> getAllUsers();
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    List<AppUserDto> getAllUsers();
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    Page<AppUser> getPagedUsers(Pageable pageable);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    Map<AppUserDto, Set<AppRoleDto>> getRolesForUsers(List<UUID> userIds);
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    AppUser addUser(AddUserDto userInput);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    Map<AppUserDto, AppUserDetailsDto> getAppUserDetails(List<AppUserDto> users);
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    AppUser editUser(UUID id, UserInput user);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    AppUserDto addUser(AddUserDto userInput);
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    AppUser changeUsername(ChangeUsernameDto data);
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     boolean existsByUsername(String username);
-
-    @PreAuthorize("hasAuthority('HR')")
-    BigDecimal getSalaryForEmp(Employee employee);
 }

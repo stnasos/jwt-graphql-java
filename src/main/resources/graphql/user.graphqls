@@ -2,12 +2,13 @@ scalar BigInteger
 scalar Date
 
 extend type Query {
-    getAllUsers: [User]
+    user(username: String!): User
+    users: [User]
 }
 
 extend type Mutation {
     addUser(user: addUserDto!): User
-    changeUsername(data: changeUsernameDto!): Boolean
+    changeUsername(data: changeUsernameDto!): User
     changePassword(data: changePasswordDto!): Boolean
     setUserEnabled(username: String!, enabled: Boolean!): Boolean
     addUserToRoles(userRoles: userRolesDto!): Boolean
@@ -28,7 +29,7 @@ input changeUsernameDto {
 input changePasswordDto {
     username: String!
     oldPassword: String
-    newPassword: String!
+    Password: String!
     confirmPassword: String!
 }
 
@@ -45,7 +46,7 @@ type User {
     accountNonLocked: Boolean
     credentialsNonExpired: Boolean
     roles: [Role]
-    employee: Employee
+    appUserDetails: AppUserDetails
 }
 
 type Role {
@@ -54,7 +55,7 @@ type Role {
     users: [User]
 }
 
-type Employee {
+type AppUserDetails {
     id: ID
     firstname: String
     lastname: String

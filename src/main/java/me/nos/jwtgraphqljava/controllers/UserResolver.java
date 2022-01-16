@@ -1,27 +1,24 @@
 package me.nos.jwtgraphqljava.controllers;
 
-import lombok.AllArgsConstructor;
-import me.nos.jwtgraphqljava.dtos.LoginInput;
-import me.nos.jwtgraphqljava.dtos.LoginOutput;
-import me.nos.jwtgraphqljava.dtos.UserInput;
-import me.nos.jwtgraphqljava.dtos.AddUserDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.nos.jwtgraphqljava.dtos.*;
 import me.nos.jwtgraphqljava.model.AppUser;
-import me.nos.jwtgraphqljava.model.Employee;
 import me.nos.jwtgraphqljava.services.IAuthService;
 import me.nos.jwtgraphqljava.services.IUserService;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
-@AllArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 public class UserResolver {
 
     private final IUserService userService;
@@ -33,22 +30,34 @@ public class UserResolver {
     }
 
     @QueryMapping
-    public List<AppUser> getAllUsers() {
+    public AppUserDto user(@Argument String username) {
+        return userService.findByUsername(username);
+    }
+
+    @QueryMapping
+    public List<AppUserDto> users() {
         return userService.getAllUsers();
     }
 
-    @SchemaMapping
-    public BigDecimal salary(Employee employee) {
-        return userService.getSalaryForEmp(employee);
+    @BatchMapping(typeName = "User", field = "roles")
+    public Map<AppUserDto, Set<AppRoleDto>> roles(List<AppUserDto> users) {
+        var userIds = users.stream().map(AppUserDto::getId).collect(Collectors.toList());
+        return userService.getRolesForUsers(userIds);
+    }
+
+    @BatchMapping(typeName = "User", field = "appUserDetails")
+    public Map<AppUserDto, AppUserDetailsDto> appUserDetails(List<AppUserDto> users) {
+        log.info("Getting employee for users: {}", users);
+        return userService.getAppUserDetails(users);
     }
 
     @MutationMapping
-    public AppUser addUser(@Argument @Valid AddUserDto user) {
+    public AppUserDto addUser(@Argument @Valid AddUserDto user) {
         return userService.addUser(user);
     }
 
     @MutationMapping
-    public AppUser editUser(@Argument UUID id, @Argument @Valid UserInput user) {
-        return userService.editUser(id, user);
+    public AppUser changeUsername(@Argument @Valid ChangeUsernameDto data) {
+        return userService.changeUsername(data);
     }
 }

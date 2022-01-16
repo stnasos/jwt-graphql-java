@@ -1,12 +1,13 @@
 package me.nos.jwtgraphqljava.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.nos.jwtgraphqljava.model.AppRole;
 import me.nos.jwtgraphqljava.model.AppUser;
-import me.nos.jwtgraphqljava.model.Employee;
+import me.nos.jwtgraphqljava.model.AppUserDetails;
 import me.nos.jwtgraphqljava.repositories.AppRoleRepository;
 import me.nos.jwtgraphqljava.repositories.AppUserRepository;
-import me.nos.jwtgraphqljava.repositories.EmployeeRepository;
+import me.nos.jwtgraphqljava.repositories.AppUserDetailsRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,57 +15,36 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class DataUtil {
 
     private final AppUserRepository userRepo;
     private final AppRoleRepository roleRepo;
-    private final EmployeeRepository empRepo;
+    private final AppUserDetailsRepository userDetailsRepo;
     private final PasswordEncoder encoder;
-
-    public DataUtil(AppUserRepository userRepo, AppRoleRepository roleRepo, EmployeeRepository empRepo, PasswordEncoder encoder) {
-        this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-        this.empRepo = empRepo;
-        this.encoder = encoder;
-    }
 
     @EventListener
     @Transactional
-    public void appReady(ApplicationReadyEvent event) throws ParseException {
+    public void appReady(ApplicationReadyEvent event) {
         if (userRepo.count() == 0) {
+            AppUser user = new AppUser("admin", encoder.encode("admin"));
 
-            AppRole adminRole = AppRole.builder().name("ADMIN").build();
-            AppRole managerRole = AppRole.builder().name("MANAGER").build();
-            AppRole userRole = AppRole.builder().name("USER").build();
-            roleRepo.saveAll(Arrays.asList(
-                    adminRole, managerRole, userRole
-            ));
+            user.getRoles().add(new AppRole("Admin"));
+            user.getRoles().add(new AppRole("Manager"));
+            user.getRoles().add(new AppRole("User"));
 
-            AppUser user = AppUser.builder()
-                    .username("admin").password(encoder.encode("admin"))
-                    .enabled(true).accountNonExpired(true)
-                    .accountNonLocked(true).credentialsNonExpired(true)
-                    .roles(new LinkedHashSet<>(Arrays.asList(
-                            adminRole, managerRole, userRole
-                    ))).build();
+
+            roleRepo.saveAll(user.getRoles());
             userRepo.save(user);
 
-            Employee employee = Employee.builder()
-                    .firstname("nasos").lastname("stou")
-                    .dateOfBirth(LocalDate.parse("1981-12-15"))
-                    .address("Kallithea").email("nos@nos.gr")
-                    .mobile("6977226000")
-                    .hiredOn(LocalDate.parse("2005-11-17"))
-                    .salary(BigDecimal.valueOf(1700))
-                    .user(user).build();
-            empRepo.save(employee);
+            userDetailsRepo.save(new AppUserDetails(null, "Nasos", "Stou", LocalDate.parse("1981-12-15"),
+                    "Kallithea", "nos@nos.gr", "6977226000", LocalDate.parse("2005-11-17"),
+                    BigDecimal.valueOf(1700), user));
+
         }
     }
 }

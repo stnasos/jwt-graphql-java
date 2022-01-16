@@ -1,8 +1,10 @@
 package me.nos.jwtgraphqljava.model;
 
 import lombok.*;
+import me.nos.jwtgraphqljava.dtos.AppUserDto;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ColumnDefault;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,14 +13,17 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
-@Builder
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class AppUser implements UserDetails {
     @Id
+    @Setter(value = AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
@@ -30,40 +35,42 @@ public class AppUser implements UserDetails {
 
     @Column(nullable = false)
     @ColumnDefault("true")
-    private boolean enabled;
+    private boolean enabled = true;
 
     @Column(nullable = false)
     @ColumnDefault("true")
-    private boolean accountNonExpired;
+    private boolean accountNonExpired = true;
 
     @Column(nullable = false)
     @ColumnDefault("true")
-    private boolean accountNonLocked;
+    private boolean accountNonLocked = true;
 
     @Column(nullable = false)
     @ColumnDefault("true")
-    private boolean credentialsNonExpired;
+    private boolean credentialsNonExpired = true;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = LAZY)
     @ToString.Exclude
     private Set<AppRole> roles = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Employee employee;
-
-    public void addRole(AppRole role) {
-        this.roles.add(role);
+    public AppUser(String username, String password) {
+        this.username = username.toLowerCase();
+        this.password = password;
     }
 
-    public void removeRole(AppRole role) {
-        this.roles.remove(role);
+    public void setUsername(@NotNull String username) {
+        this.username = username.toLowerCase();
+    }
+
+    public AppUserDto mapToAppUserDto() {
+        return new AppUserDto(this.getId(), this.getUsername(), this.getPassword(), this.isEnabled(),
+                this.isAccountNonExpired(), this.isAccountNonLocked(), this.isCredentialsNonExpired());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.getRoles().stream()
-                .map(appRole -> new SimpleGrantedAuthority(appRole.getName()))
+                .map(appRole -> new SimpleGrantedAuthority("ROLE_" + appRole.getName().toUpperCase()))
                 .collect(Collectors.toList());
     }
 
